@@ -1,8 +1,8 @@
 # Stage 1: Build environment
-ARG MAVEN_VERSION=3.8.4
-ARG JAVA_VERSION=11
+FROM maven:3.8.4-openjdk-11-slim AS build
 
-FROM maven:${MAVEN_VERSION}-openjdk-${JAVA_VERSION}-slim AS build
+ARG APP_ENV
+ENV APP_ENV=${APP_ENV}
 
 WORKDIR /app
 
@@ -14,22 +14,24 @@ RUN mvn dependency:go-offline
 
 # Copy the source code and build application
 COPY src ./src
-RUN mvn package -DskipTests
+RUN mvn package -DskipTests -Dapp.env=$APP_ENV
 
 # Stage 2: Runtime environment
-FROM openjdk:${JAVA_VERSION}-jre-slim
+FROM tomcat:9-jre11-slim
 
-WORKDIR /app
+ARG APP_ENV
+ENV APP_ENV=${APP_ENV}
 
-# Create a non-root user
-RUN adduser --system --group javauser
-USER javauser
+WORKDIR /usr/local/tomcat
 
-# Copy the built JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the WAR file from the build stage
+COPY --from=build /app/target/java-hello-world.war webapps/
+
+# Add external dependencies
+COPY config/application-${APP_ENV}.properties conf/application.properties
 
 # Expose application port
 EXPOSE 8080
 
 # Command to run the application
-CMD ["java", "-jar", "app.jar"]
+CMD ["catalina.sh", "run"]
