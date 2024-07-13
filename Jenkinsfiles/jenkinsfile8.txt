@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+    stages {
+        stage('Backup') {
+            steps {
+                sh 'pg_dump -U user -h db-server database > backup.sql'
+                archiveArtifacts artifacts: 'backup.sql', allowEmptyArchive: true
+            }
+        }
+        stage('Restore') {
+            steps {
+                sh 'psql -U user -h db-server database < backup.sql'
+            }
+        }
+    }
+}

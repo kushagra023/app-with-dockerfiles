@@ -1,0 +1,7 @@
+stage('Static Code Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQubeServer') {
+            sh 'mvn clean verify sonar:sonar'
+        }
+    }
+}

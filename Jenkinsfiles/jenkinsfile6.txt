@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Database Migration') {
+            steps {
+                sh 'flyway migrate'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                sh 'scp target/*.war user@prod-server:/path/to/webapps'
+            }
+        }
+    }
+}

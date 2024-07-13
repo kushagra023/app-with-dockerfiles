@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Security Compliance Check') {
+            steps {
+                sh 'security-compliance-tool scan target/*.war'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    if (currentBuild.result == 'SUCCESS') {
+                        sh 'scp target/*.war user@prod-server:/path/to/webapps'
+                    }
+                }
+            }
+        }
+    }
+}

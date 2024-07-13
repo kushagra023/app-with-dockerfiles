@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                sh 'owasp-dependency-check --scan target'
+            }
+        }
+        stage('Docker Build and Scan') {
+            steps {
+                script {
+                    def image = docker.build('java-hello-world-webapp')
+                    image.inside {
+                        sh 'trivy image java-hello-world-webapp'
+                    }
+                }
+            }
+        }
+    }
+}

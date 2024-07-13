@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'scp target/*.war user@prod-server:/path/to/webapps'
+            }
+        }
+        stage('Configure Autoscaling') {
+            steps {
+                sh 'aws autoscaling update-auto-scaling-group --auto-scaling-group-name my-asg --min-size 2 --max-size 10'
+            }
+        }
+    }
+}
