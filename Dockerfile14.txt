@@ -1,35 +1,13 @@
-# Stage 1: Build environment (if applicable)
-FROM maven:3.8.4-openjdk-11-slim AS build
+# Use an appropriate base image with Tomcat and Java
+FROM tomcat:9-jre11-slim
 
-WORKDIR /app
-
-# Copy only the pom.xml to cache dependencies
-COPY pom.xml .
-
-# Fetch dependencies
-RUN mvn dependency:go-offline
-
-# Copy the source code and build application (if applicable)
-COPY src ./src
-RUN mvn package -DskipTests
-
-# Stage 2: Runtime environment
-FROM openjdk:11-jre-slim
-
-WORKDIR /app
-
-# Create a non-root user
-RUN adduser --system --group javauser
-USER javauser
-
-# Copy the built JAR file from the build stage (if applicable)
-COPY --from=build /app/target/*.jar app.jar
-
-# Expose application port
+# Expose Tomcat port
 EXPOSE 8080
 
-# Define a volume for storing application data
-VOLUME /app/data
+# Set Docker labels
+LABEL maintainer="yourname@example.com"
+LABEL description="Tomcat server running Java web applications"
 
-# Command to run the application
-CMD ["java", "-jar", "app.jar"]
+# Command to run Tomcat
+CMD ["catalina.sh", "run"]
+
