@@ -1,14 +1,10 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Build') {
+        stage('Security Compliance Check') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-        stage('Deploy with Ansible') {
-            steps {
-                ansiblePlaybook playbook: 'deploy.yml', inventory: 'inventory.ini'
+                sh './security-checks.sh'
             }
         }
     }
