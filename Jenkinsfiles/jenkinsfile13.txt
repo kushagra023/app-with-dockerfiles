@@ -1,8 +1,5 @@
-stage('Vulnerability Scanning') {
+stage('Archive Artifacts') {
     steps {
-        script {
-            // Ensure Trivy is installed or available in PATH
-            sh "trivy --severity HIGH --exit-code 1 myapp:${env.BUILD_NUMBER}"
-        }
+        archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
     }
 }
