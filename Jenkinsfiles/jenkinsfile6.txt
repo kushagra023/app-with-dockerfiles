@@ -1,19 +1,10 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Build') {
+        stage('Backup and Restore') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-        stage('Database Migration') {
-            steps {
-                sh 'flyway migrate'
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                sh 'scp target/*.war user@prod-server:/path/to/webapps'
+                sh 'aws s3 sync ./data s3://backup-bucket/data'
             }
         }
     }
