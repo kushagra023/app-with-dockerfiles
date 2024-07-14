@@ -1,5 +1,19 @@
-stage('Archive Artifacts') {
-    steps {
-        archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+stage('Parallel Build and Test') {
+    parallel {
+        stage('Build') {
+            steps {
+                // Build steps
+            }
+        }
+        stage('Unit Tests') {
+            steps {
+                // Unit test steps
+            }
+        }
+        stage('Integration Tests') {
+            steps {
+                // Integration test steps
+            }
+        }
     }
 }
