@@ -1,15 +1,10 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Backup') {
+        stage('Ansible Deployment') {
             steps {
-                sh 'pg_dump -U user -h db-server database > backup.sql'
-                archiveArtifacts artifacts: 'backup.sql', allowEmptyArchive: true
-            }
-        }
-        stage('Restore') {
-            steps {
-                sh 'psql -U user -h db-server database < backup.sql'
+                sh 'ansible-playbook deploy.yaml'
             }
         }
     }
