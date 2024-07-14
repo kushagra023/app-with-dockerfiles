@@ -1,29 +1,10 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Build') {
+        stage('Autoscaling Configuration') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh 'scp target/*.war user@prod-server:/path/to/webapps'
-            }
-        }
-        stage('Log Aggregation') {
-            steps {
-                sh 'scp user@prod-server:/var/log/app/*.log ./logs/'
-            }
-        }
-        stage('Log Analysis') {
-            steps {
-                script {
-                    def logFiles = findFiles(glob: 'logs/*.log')
-                    for (file in logFiles) {
-                        sh "grep 'ERROR' ${file.path}"
-                    }
-                }
+                sh 'aws autoscaling update-auto-scaling-group --min-size 2 --max-size 5'
             }
         }
     }
