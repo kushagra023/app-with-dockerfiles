@@ -1,22 +1,10 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Build') {
+        stage('Monitor and Alert') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                sh 'scp target/*.war user@prod-server:/path/to/webapps'
-            }
-        }
-    }
-    post {
-        failure {
-            script {
-                echo 'Deployment failed, rolling back to previous version...'
-                sh 'scp backup/*.war user@prod-server:/path/to/webapps'
+                sh './monitoring.sh'
             }
         }
     }
