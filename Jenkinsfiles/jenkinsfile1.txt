@@ -1,13 +1,16 @@
 pipeline {
     agent any
-    parameters {
-        string(name: 'ENV', defaultValue: 'dev', description: 'Environment')
-    }
+    
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo "Building for environment: ${params.ENV}"
-                // Build steps
+                git 'https://github.com/your/repository.git'
+            }
+        }
+        
+        stage('Deploy with Rollback') {
+            steps {
+                sh './deploy.sh --rollback-on-failure'
             }
         }
     }
